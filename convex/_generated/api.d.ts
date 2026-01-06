@@ -9,7 +9,9 @@
  */
 
 import type * as channels from "../channels.js";
+import type * as crons from "../crons.js";
 import type * as messages from "../messages.js";
+import type * as resetData from "../resetData.js";
 import type * as search from "../search.js";
 
 import type {
@@ -20,7 +22,9 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   channels: typeof channels;
+  crons: typeof crons;
   messages: typeof messages;
+  resetData: typeof resetData;
   search: typeof search;
 }>;
 
