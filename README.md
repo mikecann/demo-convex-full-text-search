@@ -1,40 +1,107 @@
-# Welcome to your Convex + React (Vite) app
+# Convex Full Text Search Demo
 
-This is a [Convex](https://convex.dev/) project created with [`npm create convex`](https://www.npmjs.com/package/create-convex).
+This is a demo chat application showcasing **Convex Full Text Search** capabilities. The app demonstrates reactive, real-time search across messages with filtering by channel and author.
 
-After the initial setup (<2 minutes) you'll have a working full-stack app using:
+## Features
 
-- Convex as your backend (database, server logic)
-- [React](https://react.dev/) as your frontend (web page interactivity)
-- [Vite](https://vitest.dev/) for optimized web hosting
-- [Tailwind](https://tailwindcss.com/) for building great looking accessible UI
+- **Reactive Full Text Search**: Search queries automatically update in real-time as new messages are added
+- **Multi-field Filtering**: Filter search results by channel and author name
+- **Chat Interface**: Create channels, send messages, and view message history
+- **Type-safe Search**: Full TypeScript support for search indexes and queries
 
-## Get started
+## What This Demo Shows
 
-If you just cloned this codebase and didn't use `npm create convex`, run:
+This demo highlights the power of Convex's reactive full text search:
 
+1. **Real-time Updates**: When you search for messages, the results automatically update as new matching messages are added - no manual refresh needed!
+
+2. **Full Text Search Index**: Uses Convex's search index with:
+   - Search field: `body` (message content)
+   - Filter fields: `channel` and `author.name`
+
+3. **Advanced Features**:
+   - Case-insensitive search
+   - Prefix matching (type "h" to find words starting with "h")
+   - BM25 ranking with proximity scoring
+   - Multi-term queries (up to 16 terms)
+
+## Get Started
+
+1. Install dependencies:
+
+   ```bash
+   npm install
+   ```
+
+2. Start the development server:
+
+   ```bash
+   npm run dev
+   ```
+
+3. The app will open in your browser. You can:
+   - Create channels on the left
+   - Send messages in channels
+   - Search messages in real-time on the right sidebar
+   - Filter by channel and author
+
+## Project Structure
+
+- `convex/schema.ts` - Database schema with search index definition
+- `convex/search.ts` - Full text search query
+- `convex/channels.ts` - Channel management functions
+- `convex/messages.ts` - Message CRUD operations
+- `convex/crons.ts` - Daily data reset cron job
+- `src/components/` - React components for the UI
+
+## Key Code Examples
+
+### Defining a Search Index
+
+```typescript
+messages: defineTable({
+  body: v.string(),
+  author: v.object({
+    name: v.string(),
+  }),
+  channel: v.string(),
+}).searchIndex("search_body", {
+  searchField: "body",
+  filterFields: ["channel", "author.name"],
+}),
 ```
-npm install
-npm run dev
+
+### Using the Search Index
+
+```typescript
+const messages = await ctx.db
+  .query("messages")
+  .withSearchIndex("search_body", (q) => {
+    let searchQuery = q.search("body", args.query);
+    if (args.channel) searchQuery = searchQuery.eq("channel", args.channel);
+    if (args.authorName)
+      searchQuery = searchQuery.eq("author.name", args.authorName);
+    return searchQuery;
+  })
+  .take(10);
 ```
 
-If you're reading this README on GitHub and want to use this template, run:
+## Search Limits
 
-```
-npm create convex@latest -- -t react-vite
-```
+- One search index per field per table
+- Maximum 16 filter fields per index
+- Search queries can have up to 16 terms (words)
+- Each term can be up to 32 characters
+- Maximum 1024 documents returned per search
 
-## Learn more
+## Learn More
 
-To learn more about developing your project with Convex, check out:
+- [Convex Full Text Search Documentation](https://docs.convex.dev/search/text-search)
+- [Convex Documentation](https://docs.convex.dev/)
+- [Stack - Advanced Convex Topics](https://stack.convex.dev/)
 
-- The [Tour of Convex](https://docs.convex.dev/get-started) for a thorough introduction to Convex principles.
-- The rest of [Convex docs](https://docs.convex.dev/) to learn about all Convex features.
-- [Stack](https://stack.convex.dev/) for in-depth articles on advanced topics.
+## Notes
 
-## Join the community
-
-Join thousands of developers building full-stack apps with Convex:
-
-- Join the [Convex Discord community](https://convex.dev/community) to get help in real-time.
-- Follow [Convex on GitHub](https://github.com/get-convex/), star and contribute to the open-source implementation of Convex.
+- The app includes a cron job that resets all data every 24 hours and populates placeholder channels and messages
+- Search is powered by [Tantivy](https://github.com/quickwit-oss/tantivy), a high-performance Rust search library
+- Results are ranked using BM25 scoring with proximity and term frequency considerations
