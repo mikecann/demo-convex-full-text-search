@@ -8,7 +8,9 @@
  * @module
  */
 
-import type * as myFunctions from "../myFunctions.js";
+import type * as channels from "../channels.js";
+import type * as messages from "../messages.js";
+import type * as search from "../search.js";
 
 import type {
   ApiFromModules,
@@ -17,7 +19,9 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
-  myFunctions: typeof myFunctions;
+  channels: typeof channels;
+  messages: typeof messages;
+  search: typeof search;
 }>;
 
 /**
