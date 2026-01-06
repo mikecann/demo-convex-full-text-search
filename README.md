@@ -33,17 +33,27 @@ This demo highlights the power of Convex's reactive full text search:
    npm install
    ```
 
-2. Start the development server:
+2. Set up Convex (if you haven't already):
+
+   ```bash
+   npx convex dev
+   ```
+
+   This will create a Convex project and generate the necessary configuration files.
+
+3. Start the development server:
 
    ```bash
    npm run dev
    ```
 
-3. The app will open in your browser. You can:
+4. The app will open in your browser. You can:
    - Create channels on the left
    - Send messages in channels
    - Search messages in real-time on the right sidebar
    - Filter by channel and author
+
+   **Note**: The app includes placeholder data that gets reset every 24 hours. Try searching for "mike", "hello", or "hi" to see the search in action!
 
 ## Project Structure
 
